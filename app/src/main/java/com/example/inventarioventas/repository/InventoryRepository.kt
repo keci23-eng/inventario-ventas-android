@@ -1,7 +1,9 @@
 package com.example.inventarioventas.data.repository
 
 import com.example.inventarioventas.data.local.entity.*
+import com.example.inventarioventas.data.remote.dto.ApiProductDto
 import kotlinx.coroutines.flow.Flow
+import com.example.inventarioventas.utils.Result
 
 interface InventoryRepository {
 
@@ -35,4 +37,8 @@ interface InventoryRepository {
 
     fun getSaleItems(saleId: Int): Flow<List<SaleItem>>
     suspend fun addSaleItems(items: List<SaleItem>)
+    suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>>
+    suspend fun obtenerCategoriasOnline(): Result<List<String>>
+    suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>>
+
 }
