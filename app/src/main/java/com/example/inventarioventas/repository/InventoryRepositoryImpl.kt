@@ -3,13 +3,17 @@ package com.example.inventarioventas.data.repository
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
 import kotlinx.coroutines.flow.Flow
+import com.example.inventarioventas.data.remote.api.CatalogApiService
+import com.example.inventarioventas.utils.Result
+import com.example.inventarioventas.data.remote.dto.ApiProductDto
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
     private val productDao: ProductDao,
     private val customerDao: CustomerDao,
     private val saleDao: SaleDao,
-    private val saleItemDao: SaleItemDao
+    private val saleItemDao: SaleItemDao,
+    private val catalogApiService: CatalogApiService
 ) : InventoryRepository {
 
     // Categories
@@ -42,4 +46,30 @@ class InventoryRepositoryImpl(
 
     override fun getSaleItems(saleId: Int): Flow<List<SaleItem>> = saleItemDao.getItemsBySaleId(saleId)
     override suspend fun addSaleItems(items: List<SaleItem>) = saleItemDao.insertAll(items)
+    override suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>> {
+        return try {
+            val data = catalogApiService.getProducts()
+            Result.Success(data)
+        } catch (e: Exception) {
+            Result.Error("No se pudo cargar el catálogo. Verifica tu conexión.", e)
+        }
+    }
+
+    override suspend fun obtenerCategoriasOnline(): Result<List<String>> {
+        return try {
+            val data = catalogApiService.getCategories()
+            Result.Success(data)
+        } catch (e: Exception) {
+            Result.Error("No se pudieron cargar las categorías. Verifica tu conexión.", e)
+        }
+    }
+
+    override suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>> {
+        return try {
+            val data = catalogApiService.getProductsByCategory(categoria)
+            Result.Success(data)
+        } catch (e: Exception) {
+            Result.Error("No se pudo cargar la categoría seleccionada. Verifica tu conexión.", e)
+        }
+    }
 }
