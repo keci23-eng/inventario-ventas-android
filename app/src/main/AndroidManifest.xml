@@ -12,7 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InventarioVentas">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.AddEditSale"
+            android:exported="false" />
+        <activity
+            android:name=".ui.AddEditProduct"
+            android:exported="false" />
+        <activity
+            android:name=".ui.SalesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.InventoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
