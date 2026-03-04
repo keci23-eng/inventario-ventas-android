@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import com.example.inventarioventas.data.remote.api.CatalogApiService
 import com.example.inventarioventas.utils.Result
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
+import com.example.inventarioventas.domain.model.CreateSaleRequest
+import com.example.inventarioventas.data.local.entity.Sale
+import com.example.inventarioventas.data.local.entity.SaleItem
+import java.util.Date
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
@@ -13,7 +17,8 @@ class InventoryRepositoryImpl(
     private val customerDao: CustomerDao,
     private val saleDao: SaleDao,
     private val saleItemDao: SaleItemDao,
-    private val catalogApiService: CatalogApiService
+    private val catalogApiService: CatalogApiService,
+    private val salesLocalTransaction: com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
 ) : InventoryRepository {
 
     // Categories
@@ -70,6 +75,57 @@ class InventoryRepositoryImpl(
             Result.Success(data)
         } catch (e: Exception) {
             Result.Error("No se pudo cargar la categoría seleccionada. Verifica tu conexión.", e)
+        }
+    }
+    override suspend fun registrarVenta(request: CreateSaleRequest): Result<Long> {
+        return try {
+            if (request.items.isEmpty()) {
+                return Result.Error("La venta no puede estar vacía.")
+            }
+
+            // 1) calcular total
+            val total = request.items.sumOf { it.quantity * it.unitPrice }
+
+            // 2) validar stock y preparar updates
+            val stockUpdates = mutableListOf<Pair<Int, Int>>()
+
+            request.items.forEach { item ->
+                val product = productDao.getById(item.productId)
+                    ?: return Result.Error("Producto no encontrado: ${item.productId}")
+
+                if (item.quantity <= 0) return Result.Error("Cantidad inválida para ${product.name}")
+                if (product.stock < item.quantity) return Result.Error("Stock insuficiente: ${product.name}")
+
+                stockUpdates.add(product.id to (product.stock - item.quantity))
+            }
+
+            // 3) crear Sale
+            val sale = Sale(
+                customerId = request.customerId,
+                date = Date(),
+                total = total
+            )
+
+            // 4) crear items
+            val items = request.items.map { i ->
+                SaleItem(
+                    saleId = 0, // se reemplaza dentro de la transacción
+                    productId = i.productId,
+                    quantity = i.quantity,
+                    unitPrice = i.unitPrice
+                )
+            }
+
+            // 5) transacción
+            val saleId = salesLocalTransaction.createSaleWithItemsAndUpdateStock(
+                sale = sale,
+                items = items,
+                stockUpdates = stockUpdates
+            )
+
+            Result.Success(saleId)
+        } catch (e: Exception) {
+            Result.Error("No se pudo registrar la venta.", e)
         }
     }
 }
