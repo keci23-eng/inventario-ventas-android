@@ -4,6 +4,8 @@ import com.example.inventarioventas.data.local.entity.*
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
 import kotlinx.coroutines.flow.Flow
 import com.example.inventarioventas.utils.Result
+import com.example.inventarioventas.domain.model.CreateSaleRequest
+
 
 interface InventoryRepository {
 
@@ -40,5 +42,6 @@ interface InventoryRepository {
     suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>>
     suspend fun obtenerCategoriasOnline(): Result<List<String>>
     suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>>
+    suspend fun registrarVenta(request: CreateSaleRequest): Result<Long>
 
 }

@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
 
+
 @Database(
     entities = [Category::class, Product::class, Customer::class, Sale::class, SaleItem::class],
     version = 1,
