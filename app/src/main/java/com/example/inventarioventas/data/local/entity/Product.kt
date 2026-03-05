@@ -26,5 +26,7 @@ data class Product(
     val name: String,
     val price: Double,
     val stock: Int,
-    val categoryId: Int
+    val categoryId: Int,
+    val imageUri: String? = null
+
 ) : Parcelable // <--- ESTO TAMBIÉN ES OBLIGATORIO

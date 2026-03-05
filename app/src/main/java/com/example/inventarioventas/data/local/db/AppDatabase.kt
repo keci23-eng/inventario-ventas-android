@@ -10,7 +10,7 @@ import com.example.inventarioventas.data.local.entity.*
 
 @Database(
     entities = [Category::class, Product::class, Customer::class, Sale::class, SaleItem::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
