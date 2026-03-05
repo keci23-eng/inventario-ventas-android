@@ -2,17 +2,13 @@ package com.example.inventarioventas.data.repository
 
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
-import kotlinx.coroutines.flow.Flow
+import com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
 import com.example.inventarioventas.data.remote.api.CatalogApiService
-import com.example.inventarioventas.utils.Result
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
 import com.example.inventarioventas.domain.model.CreateSaleRequest
-import com.example.inventarioventas.data.local.entity.Sale
-import com.example.inventarioventas.data.local.entity.SaleItem
-import java.util.Date
 import com.example.inventarioventas.domain.model.OnlineProduct
-import com.example.inventarioventas.data.local.entity.Category
-import com.example.inventarioventas.data.local.entity.Product
+import com.example.inventarioventas.utils.Result
+import kotlinx.coroutines.flow.Flow
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
@@ -21,39 +17,86 @@ class InventoryRepositoryImpl(
     private val saleDao: SaleDao,
     private val saleItemDao: SaleItemDao,
     private val catalogApiService: CatalogApiService,
-    private val salesLocalTransaction: com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
+    private val salesLocalTransaction: SalesLocalTransaction
 ) : InventoryRepository {
 
-    // Categories
+    // -------------------------
+    // CATEGORIES
+    // -------------------------
     override fun getCategories(): Flow<List<Category>> = categoryDao.getAll()
-    override suspend fun addCategory(category: Category): Long = categoryDao.insert(category)
-    override suspend fun updateCategory(category: Category) = categoryDao.update(category)
-    override suspend fun deleteCategory(category: Category) = categoryDao.delete(category)
 
-    // Products
+    override suspend fun addCategory(category: Category): Long =
+        categoryDao.insert(category)
+
+    override suspend fun updateCategory(category: Category) =
+        categoryDao.update(category)
+
+    override suspend fun deleteCategory(category: Category) =
+        categoryDao.delete(category)
+
+    // -------------------------
+    // PRODUCTS
+    // -------------------------
     override fun getProducts(): Flow<List<Product>> = productDao.getAll()
-    override fun getProductsByCategory(categoryId: Int): Flow<List<Product>> = productDao.getByCategory(categoryId)
-    override fun searchProducts(query: String): Flow<List<Product>> = productDao.searchByName(query)
-    override suspend fun getProductById(id: Int): Product? = productDao.getById(id)
-    override suspend fun addProduct(product: Product): Long = productDao.insert(product)
-    override suspend fun updateProduct(product: Product) = productDao.update(product)
-    override suspend fun deleteProduct(product: Product) = productDao.delete(product)
-    override suspend fun updateStock(productId: Int, newStock: Int) = productDao.updateStock(productId, newStock)
 
-    // Customers
+    override fun getProductsByCategory(categoryId: Int): Flow<List<Product>> =
+        productDao.getByCategory(categoryId)
+
+    override fun searchProducts(query: String): Flow<List<Product>> =
+        productDao.searchByName(query)
+
+    override suspend fun getProductById(id: Int): Product? =
+        productDao.getById(id)
+
+    override suspend fun addProduct(product: Product): Long =
+        productDao.insert(product)
+
+    override suspend fun updateProduct(product: Product) =
+        productDao.update(product)
+
+    override suspend fun deleteProduct(product: Product) =
+        productDao.delete(product)
+
+    override suspend fun updateStock(productId: Int, newStock: Int) =
+        productDao.updateStock(productId, newStock)
+
+    // -------------------------
+    // CUSTOMERS
+    // -------------------------
     override fun getCustomers(): Flow<List<Customer>> = customerDao.getAll()
-    override fun searchCustomers(query: String): Flow<List<Customer>> = customerDao.searchByName(query)
-    override suspend fun addCustomer(customer: Customer): Long = customerDao.insert(customer)
-    override suspend fun updateCustomer(customer: Customer) = customerDao.update(customer)
-    override suspend fun deleteCustomer(customer: Customer) = customerDao.delete(customer)
 
-    // Sales
+    override fun searchCustomers(query: String): Flow<List<Customer>> =
+        customerDao.searchByName(query)
+
+    override suspend fun addCustomer(customer: Customer): Long =
+        customerDao.insert(customer)
+
+    override suspend fun updateCustomer(customer: Customer) =
+        customerDao.update(customer)
+
+    override suspend fun deleteCustomer(customer: Customer) =
+        customerDao.delete(customer)
+
+    // -------------------------
+    // SALES
+    // -------------------------
     override fun getSales(): Flow<List<Sale>> = saleDao.getAll()
-    override fun getSalesByCustomer(customerId: Int): Flow<List<Sale>> = saleDao.getByCustomer(customerId)
-    override suspend fun addSale(sale: Sale): Long = saleDao.insert(sale)
 
-    override fun getSaleItems(saleId: Int): Flow<List<SaleItem>> = saleItemDao.getItemsBySaleId(saleId)
-    override suspend fun addSaleItems(items: List<SaleItem>) = saleItemDao.insertAll(items)
+    override fun getSalesByCustomer(customerId: Int): Flow<List<Sale>> =
+        saleDao.getByCustomer(customerId)
+
+    override suspend fun addSale(sale: Sale): Long =
+        saleDao.insert(sale)
+
+    override fun getSaleItems(saleId: Int): Flow<List<SaleItem>> =
+        saleItemDao.getItemsBySaleId(saleId)
+
+    override suspend fun addSaleItems(items: List<SaleItem>) =
+        saleItemDao.insertAll(items)
+
+    // -------------------------
+    // ONLINE CATALOG (RETROFIT)
+    // -------------------------
     override suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>> {
         return try {
             val data = catalogApiService.getProducts()
@@ -80,6 +123,10 @@ class InventoryRepositoryImpl(
             Result.Error("No se pudo cargar la categoría seleccionada. Verifica tu conexión.", e)
         }
     }
+
+    // -------------------------
+    // REGISTRAR VENTA (TRANSACCIÓN)
+    // -------------------------
     override suspend fun registrarVenta(request: CreateSaleRequest): Result<Long> {
         return try {
             if (request.items.isEmpty()) {
@@ -90,7 +137,7 @@ class InventoryRepositoryImpl(
             val total = request.items.sumOf { it.quantity * it.unitPrice }
 
             // 2) validar stock y preparar updates
-            val stockUpdates = mutableListOf<Pair<Int, Int>>()
+            val stockUpdates = mutableListOf<Pair<Int, Int>>() // productId -> newStock
 
             request.items.forEach { item ->
                 val product = productDao.getById(item.productId)
@@ -102,24 +149,24 @@ class InventoryRepositoryImpl(
                 stockUpdates.add(product.id to (product.stock - item.quantity))
             }
 
-            // 3) crear Sale
+            // 3) crear Sale (date es Long)
             val sale = Sale(
                 customerId = request.customerId,
-                date = Date(),
+                date = System.currentTimeMillis(),
                 total = total
             )
 
-            // 4) crear items
+            // 4) crear items con saleId placeholder (se reemplaza en transacción)
             val items = request.items.map { i ->
                 SaleItem(
-                    saleId = 0, // se reemplaza dentro de la transacción
+                    saleId = -1, // placeholder
                     productId = i.productId,
                     quantity = i.quantity,
                     unitPrice = i.unitPrice
                 )
             }
 
-            // 5) transacción
+            // 5) transacción (inserta venta, items y actualiza stock)
             val saleId = salesLocalTransaction.createSaleWithItemsAndUpdateStock(
                 sale = sale,
                 items = items,
@@ -131,11 +178,14 @@ class InventoryRepositoryImpl(
             Result.Error("No se pudo registrar la venta.", e)
         }
     }
+
+    // -------------------------
+    // IMPORTAR PRODUCTO ONLINE A LOCAL
+    // -------------------------
     override suspend fun importarProductoDesdeOnline(p: OnlineProduct): Long {
-        // 1) Buscar o crear categoría (si tu DAO no tiene getByName, lo hacemos simple: insertar y ya)
+        // Inserta categoría (si no tienes getByName, se insertará cada vez)
         val categoryId = categoryDao.insert(Category(name = p.category)).toInt()
 
-        // 2) Insertar producto en tu inventario local
         return productDao.insert(
             Product(
                 name = p.title,

@@ -21,8 +21,7 @@ import java.util.Date
 data class Sale(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-
     val customerId: Int,
-    val date: Date,
+    val date: Long,
     val total: Double
 )
