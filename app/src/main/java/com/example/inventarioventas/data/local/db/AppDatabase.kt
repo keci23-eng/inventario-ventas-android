@@ -8,10 +8,9 @@ import androidx.room.TypeConverters
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
 
-
 @Database(
     entities = [Category::class, Product::class, Customer::class, Sale::class, SaleItem::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -32,7 +31,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "inventory_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigrationOnDowngrade()
+                    .build()
+
                 INSTANCE = instance
                 instance
             }
