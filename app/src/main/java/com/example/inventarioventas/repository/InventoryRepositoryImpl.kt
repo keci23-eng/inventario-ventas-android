@@ -10,6 +10,9 @@ import com.example.inventarioventas.domain.model.CreateSaleRequest
 import com.example.inventarioventas.data.local.entity.Sale
 import com.example.inventarioventas.data.local.entity.SaleItem
 import java.util.Date
+import com.example.inventarioventas.domain.model.OnlineProduct
+import com.example.inventarioventas.data.local.entity.Category
+import com.example.inventarioventas.data.local.entity.Product
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
@@ -127,5 +130,19 @@ class InventoryRepositoryImpl(
         } catch (e: Exception) {
             Result.Error("No se pudo registrar la venta.", e)
         }
+    }
+    override suspend fun importarProductoDesdeOnline(p: OnlineProduct): Long {
+        // 1) Buscar o crear categoría (si tu DAO no tiene getByName, lo hacemos simple: insertar y ya)
+        val categoryId = categoryDao.insert(Category(name = p.category)).toInt()
+
+        // 2) Insertar producto en tu inventario local
+        return productDao.insert(
+            Product(
+                name = p.title,
+                price = p.price,
+                stock = 1,
+                categoryId = categoryId
+            )
+        )
     }
 }
