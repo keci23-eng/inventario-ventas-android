@@ -9,5 +9,8 @@ data class Customer(
     val id: Int = 0,
 
     val name: String,
-    val phone: String
+    val phone: String,
+    val email: String?=null
 )
+
+
