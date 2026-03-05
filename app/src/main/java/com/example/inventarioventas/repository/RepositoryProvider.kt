@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.inventarioventas.data.local.db.AppDatabase
 import com.example.inventarioventas.data.remote.api.RetrofitClient
 import com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
+import com.example.inventarioventas.repository.OnlineCatalogRepositoryImpl
 
 object RepositoryProvider {
 
@@ -27,4 +28,5 @@ object RepositoryProvider {
             repo
         }
     }
+    val onlineRepo = OnlineCatalogRepositoryImpl(RetrofitClient.catalogApi)
 }

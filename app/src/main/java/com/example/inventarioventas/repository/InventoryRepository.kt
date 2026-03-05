@@ -43,5 +43,6 @@ interface InventoryRepository {
     suspend fun obtenerCategoriasOnline(): Result<List<String>>
     suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>>
     suspend fun registrarVenta(request: CreateSaleRequest): Result<Long>
+    suspend fun importarProductoDesdeOnline(p: com.example.inventarioventas.domain.model.OnlineProduct): Long
 
 }
