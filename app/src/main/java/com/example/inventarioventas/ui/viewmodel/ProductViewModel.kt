@@ -29,4 +29,5 @@ class ProductViewModel(
     fun updateStock(productId: Int, newStock: Int) = viewModelScope.launch {
         repo.updateStock(productId, newStock)
     }
+
 }

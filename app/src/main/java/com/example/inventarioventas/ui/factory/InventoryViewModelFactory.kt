@@ -27,8 +27,14 @@ class InventoryViewModelFactory(
             modelClass.isAssignableFrom(SalesViewModel::class.java) ->
                 SalesViewModel(repo) as T
 
-            modelClass.isAssignableFrom(OnlineCatalogViewModel::class.java) ->
-                OnlineCatalogViewModel(repo) as T
+            modelClass.isAssignableFrom(OnlineCatalogViewModel::class.java) -> {
+                OnlineCatalogViewModel(
+                    // 1. Usamos el que tu compañero ya dejó listo
+                    onlineRepo = com.example.inventarioventas.data.repository.RepositoryProvider.onlineRepo,
+                    // 2. Le pasamos el repositorio local que ya teníamos
+                    inventoryRepo = repo
+                ) as T
+            }
 
             else -> throw IllegalArgumentException("ViewModel no soportado: ${modelClass.name}")
         }

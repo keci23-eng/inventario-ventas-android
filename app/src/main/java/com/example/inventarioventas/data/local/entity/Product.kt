@@ -1,10 +1,13 @@
 package com.example.inventarioventas.data.local.entity
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize // <--- ESTO ES LO QUE PERMITE EL VIAJE
 @Entity(
     tableName = "products",
     foreignKeys = [
@@ -20,9 +23,8 @@ import androidx.room.PrimaryKey
 data class Product(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-
     val name: String,
     val price: Double,
     val stock: Int,
     val categoryId: Int
-)
+) : Parcelable // <--- ESTO TAMBIÉN ES OBLIGATORIO
