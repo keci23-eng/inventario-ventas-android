@@ -3,7 +3,9 @@ package com.example.inventarioventas.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.inventarioventas.data.local.entity.Sale
+import com.example.inventarioventas.data.local.relation.SaleWithItems
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,4 +22,8 @@ interface SaleDao {
 
     @Insert
     suspend fun insert(sale: Sale): Long
+    @Transaction
+
+    @Query("SELECT * FROM sales ORDER BY date DESC")
+    fun getSalesWithItems(): Flow<List<SaleWithItems>>
 }

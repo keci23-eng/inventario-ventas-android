@@ -1,6 +1,7 @@
 package com.example.inventarioventas.data.repository
 
 import com.example.inventarioventas.data.local.entity.*
+import com.example.inventarioventas.data.local.relation.SaleWithItems
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
 import kotlinx.coroutines.flow.Flow
 import com.example.inventarioventas.utils.Result
@@ -44,5 +45,8 @@ interface InventoryRepository {
     suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>>
     suspend fun registrarVenta(request: CreateSaleRequest): Result<Long>
     suspend fun importarProductoDesdeOnline(p: com.example.inventarioventas.domain.model.OnlineProduct): Long
+
+    fun getSalesHistory(): Flow<List<SaleWithItems>>
+
 
 }

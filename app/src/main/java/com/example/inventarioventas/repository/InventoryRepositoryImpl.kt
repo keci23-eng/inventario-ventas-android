@@ -2,6 +2,7 @@ package com.example.inventarioventas.data.repository
 
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
+import com.example.inventarioventas.data.local.relation.SaleWithItems
 import com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
 import com.example.inventarioventas.data.remote.api.CatalogApiService
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
@@ -194,5 +195,10 @@ class InventoryRepositoryImpl(
                 categoryId = categoryId
             )
         )
+    }
+
+    override fun getSalesHistory(): Flow<List<SaleWithItems>> {
+        return saleDao.getSalesWithItems()
+
     }
 }
