@@ -12,6 +12,8 @@ interface InventoryRepository {
 
     // Categories
     fun getCategories(): Flow<List<Category>>
+
+    suspend fun inicializarCategoriasPorDefecto()
     suspend fun addCategory(category: Category): Long
     suspend fun updateCategory(category: Category)
     suspend fun deleteCategory(category: Category)
@@ -47,6 +49,5 @@ interface InventoryRepository {
     suspend fun importarProductoDesdeOnline(p: com.example.inventarioventas.domain.model.OnlineProduct): Long
 
     fun getSalesHistory(): Flow<List<SaleWithItems>>
-
 
 }

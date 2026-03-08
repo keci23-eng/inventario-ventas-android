@@ -6,8 +6,10 @@ import com.example.inventarioventas.data.repository.InventoryRepository
 import com.example.inventarioventas.ui.viewmodel.CategoryViewModel
 import com.example.inventarioventas.ui.viewmodel.CustomerViewModel
 import com.example.inventarioventas.ui.viewmodel.OnlineCatalogViewModel
+import com.example.inventarioventas.ui.viewmodel.AddEditSaleViewModel
 import com.example.inventarioventas.ui.viewmodel.ProductViewModel
 import com.example.inventarioventas.ui.viewmodel.SalesViewModel
+// 1. IMPORTANTE: Importar el nuevo ViewModel
 
 class InventoryViewModelFactory(
     private val repo: InventoryRepository
@@ -27,11 +29,13 @@ class InventoryViewModelFactory(
             modelClass.isAssignableFrom(SalesViewModel::class.java) ->
                 SalesViewModel(repo) as T
 
+            // 2. AGREGAMOS EL BLOQUE PARA LA PANTALLA DE NUEVA VENTA
+            modelClass.isAssignableFrom(AddEditSaleViewModel::class.java) ->
+                AddEditSaleViewModel(repo) as T
+
             modelClass.isAssignableFrom(OnlineCatalogViewModel::class.java) -> {
                 OnlineCatalogViewModel(
-                    // 1. Usamos el que tu compañero ya dejó listo
                     onlineRepo = com.example.inventarioventas.data.repository.RepositoryProvider.onlineRepo,
-                    // 2. Le pasamos el repositorio local que ya teníamos
                     inventoryRepo = repo
                 ) as T
             }

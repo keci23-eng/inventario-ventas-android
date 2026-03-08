@@ -10,6 +10,7 @@ import com.example.inventarioventas.domain.model.CreateSaleRequest
 import com.example.inventarioventas.domain.model.OnlineProduct
 import com.example.inventarioventas.utils.Result
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
@@ -34,6 +35,30 @@ class InventoryRepositoryImpl(
 
     override suspend fun deleteCategory(category: Category) =
         categoryDao.delete(category)
+
+    // NUEVA FUNCIÓN: Si la base de datos está vacía, inserta estas 10 categorías
+    override suspend fun inicializarCategoriasPorDefecto() {
+        // Tomamos solo la primera lectura de la tabla para ver si está vacía
+        val categoriasActuales = categoryDao.getAll().first()
+
+        if (categoriasActuales.isEmpty()) {
+            val categoriasIniciales = listOf(
+                Category(id = 0, name = "Ropa"),
+                Category(id = 0, name = "Joyería"),
+                Category(id = 0, name = "Zapatos"),
+                Category(id = 0, name = "Accesorios"),
+                Category(id = 0, name = "Tecnología"),
+                Category(id = 0, name = "Hogar"),
+                Category(id = 0, name = "Belleza"),
+                Category(id = 0, name = "Papelería"),
+                Category(id = 0, name = "Deportes"),
+                Category(id = 0, name = "Alimentos")
+            )
+
+            // Insertamos una por una en la base de datos
+            categoriasIniciales.forEach { categoryDao.insert(it) }
+        }
+    }
 
     // -------------------------
     // PRODUCTS
@@ -184,21 +209,32 @@ class InventoryRepositoryImpl(
     // IMPORTAR PRODUCTO ONLINE A LOCAL
     // -------------------------
     override suspend fun importarProductoDesdeOnline(p: OnlineProduct): Long {
-        // Inserta categoría (si no tienes getByName, se insertará cada vez)
-        val categoryId = categoryDao.insert(Category(name = p.category)).toInt()
+        // 1. Obtenemos la lista actual de categorías de la base de datos
+        val categoriasActuales = categoryDao.getAll().first()
 
+        // 2. Buscamos si la categoría del producto ya existe
+        val categoriaExistente = categoriasActuales.find { it.name == p.category }
+
+        // 3. Si existe, usamos su ID. Si no existe, la insertamos y guardamos el nuevo ID.
+        val categoryId = if (categoriaExistente != null) {
+            categoriaExistente.id
+        } else {
+            categoryDao.insert(Category(id = 0, name = p.category)).toInt()
+        }
+
+        // 4. Finalmente, guardamos el producto usando el categoryId correcto
         return productDao.insert(
             Product(
                 name = p.title,
                 price = p.price,
                 stock = 1,
                 categoryId = categoryId
+                // Nota: Si 'OnlineProduct' tiene imagen, puedes agregar 'imageUri = p.image' aquí
             )
         )
     }
 
     override fun getSalesHistory(): Flow<List<SaleWithItems>> {
         return saleDao.getSalesWithItems()
-
     }
 }
