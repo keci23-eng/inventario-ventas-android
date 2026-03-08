@@ -5,7 +5,8 @@ import com.example.inventarioventas.data.local.db.AppDatabase
 import com.example.inventarioventas.data.remote.api.RetrofitClient
 import com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
 import com.example.inventarioventas.repository.OnlineCatalogRepositoryImpl
-
+import com.example.inventarioventas.data.remote.firebase.model.FirebaseStorageService
+import com.example.inventarioventas.data.remote.firebase.model.FirebaseFirestoreService
 object RepositoryProvider {
 
     @Volatile private var repository: InventoryRepository? = null
@@ -21,7 +22,9 @@ object RepositoryProvider {
                 saleDao = db.saleDao(),
                 saleItemDao = db.saleItemDao(),
                 catalogApiService = RetrofitClient.catalogApi,
-                salesLocalTransaction = SalesLocalTransaction(db)
+                salesLocalTransaction = SalesLocalTransaction(db),
+                firebaseFirestoreService = FirebaseFirestoreService(),
+                firebaseStorageService = FirebaseStorageService()
             )
 
             repository = repo
