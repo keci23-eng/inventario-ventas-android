@@ -1,0 +1,24 @@
+[33mefb7060[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/ui-viewmodels-connection[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m5805e6e[m[33m ([m[1;31morigin/feature/ui-viewmodels-connection[m[33m)[m HEAD@{1}: checkout: moving from develop to feature/ui-viewmodels-connection
+[33m5621933[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m HEAD@{2}: pull origin develop: Fast-forward
+[33m3bddf3a[m HEAD@{3}: checkout: moving from feature/sales-history-ui to develop
+[33m6e16c98[m[33m ([m[1;32mfeature/sales-history-ui[m[33m)[m HEAD@{4}: commit: Guardando mis avances antes de actualizar
+[33m3bddf3a[m HEAD@{5}: checkout: moving from develop to feature/sales-history-ui
+[33m3bddf3a[m HEAD@{6}: pull origin develop: Fast-forward
+[33ma5aa1ab[m HEAD@{7}: checkout: moving from feature/ui-catalog to develop
+[33m97b6039[m[33m ([m[1;31morigin/feature/ui-catalog[m[33m, [m[1;32mfeature/ui-catalog[m[33m)[m HEAD@{8}: commit: Fix: Implementación de CRUD completo, soporte Parcelable en Product y corrección de actualización
+[33ma5aa1ab[m HEAD@{9}: checkout: moving from develop to feature/ui-catalog
+[33ma5aa1ab[m HEAD@{10}: checkout: moving from develop to develop
+[33ma5aa1ab[m HEAD@{11}: pull origin develop: Fast-forward
+[33mefb7060[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/ui-viewmodels-connection[m[33m)[m HEAD@{12}: checkout: moving from feature/ui-viewmodels-connection to develop
+[33m5805e6e[m[33m ([m[1;31morigin/feature/ui-viewmodels-connection[m[33m)[m HEAD@{13}: commit: Corrección de mappers, adapter y agregado de campo descripción en AddEditProduct
+[33mefb7060[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/ui-viewmodels-connection[m[33m)[m HEAD@{14}: checkout: moving from develop to feature/ui-viewmodels-connection
+[33mefb7060[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/ui-viewmodels-connection[m[33m)[m HEAD@{15}: pull: Fast-forward
+[33m425bf08[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{16}: checkout: moving from feature/ui-layout to develop
+[33m7786f44[m[33m ([m[1;32mfeature/ui-layout[m[33m)[m HEAD@{17}: commit: Guardando configuración de dependencias y modelos antes de actualizar
+[33m4ea9e17[m HEAD@{18}: commit (amend): "Implementación de la interfaz gráfica funcional: Layouts de Inventario, Ventas y formularios de edición con ViewBinding configurado."
+[33m9df4543[m HEAD@{19}: commit (amend): "Implementación de la interfaz gráfica funcional: Layouts de Inventario, Ventas y formularios de edición con ViewBinding configurado."
+[33m4e4f33e[m HEAD@{20}: commit: "Implementación de la interfaz gráfica funcional: Layouts de Inventario, Ventas y formularios de edición con ViewBinding configurado."
+[33m425bf08[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{21}: checkout: moving from develop to feature/ui-layout
+[33m425bf08[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{22}: checkout: moving from main to develop
+[33m425bf08[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{23}: clone: from https://github.com/keci23-eng/inventario-ventas-android.git
