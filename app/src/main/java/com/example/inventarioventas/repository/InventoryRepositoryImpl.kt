@@ -10,6 +10,7 @@ import com.example.inventarioventas.domain.model.CreateSaleRequest
 import com.example.inventarioventas.domain.model.OnlineProduct
 import com.example.inventarioventas.utils.Result
 import kotlinx.coroutines.flow.Flow
+import com.example.inventarioventas.data.local.seed.CategorySeeder
 
 class InventoryRepositoryImpl(
     private val categoryDao: CategoryDao,
@@ -200,5 +201,9 @@ class InventoryRepositoryImpl(
     override fun getSalesHistory(): Flow<List<SaleWithItems>> {
         return saleDao.getSalesWithItems()
 
+    }
+    override suspend fun inicializarCategoriasPorDefecto() {
+        val seeder = CategorySeeder(categoryDao)
+        seeder.seedDefaultCategories()
     }
 }
