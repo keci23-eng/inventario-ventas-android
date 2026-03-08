@@ -48,5 +48,7 @@ interface InventoryRepository {
 
     fun getSalesHistory(): Flow<List<SaleWithItems>>
 
+    suspend fun inicializarCategoriasPorDefecto()
+
 
 }
