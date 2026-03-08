@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -75,4 +76,9 @@ dependencies {
 
     // OkHttp log (para ver requests en Logcat)
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 }
