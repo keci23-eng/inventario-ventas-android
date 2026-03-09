@@ -22,6 +22,21 @@ Una aplicación Android integral para administrar operaciones de inventario y ve
 - **Actualizaciones en Tiempo Real**: Mantener el inventario sincronizado en todas las operaciones
 - **Persistencia de Datos**: Almacenamiento local confiable para datos de inventario y ventas
 
+- ## 🗄️ Base de Datos
+
+La aplicación utiliza un modelo de datos relacional robusto para mantener la integridad del inventario y las transacciones. A continuación se presenta el diagrama de la base de datos:
+
+![Esquema de la Base de Datos]() ![WhatsApp Image 2026-03-09 at 9 16 05 AM](https://github.com/user-attachments/assets/1b7940df-6067-430a-8d1a-7bf5ddc2f778)
+
+
+### Estructura de Tablas:
+
+* **`categories`**: Gestiona la clasificación de los artículos (`id`, `name`).
+* **`products`**: Catálogo principal del inventario. Almacena los detalles de cada artículo (`price`, `stock`, `imageUri`) y se relaciona con su categoría respectiva mediante `categoryId`.
+* **`customers`**: Directorio de clientes con su información básica de contacto (`id`, `name`, `phone`, `email`).
+* **`sales`**: Registro de cabecera de las ventas. Vincula la transacción con el cliente (`customerId`) y registra la fecha (`date`) y el valor total (`total`).
+* **`sale_items`**: Entidad de detalle que conecta las ventas con los productos. Desglosa qué artículos se vendieron en cada transacción, registrando la cantidad (`quantity`) y el precio unitario exacto al momento de la venta (`unitPrice`).
+
 ## 📋 Requisitos
 
 - **Android SDK**: API Level 21 (Android 5.0) o superior
