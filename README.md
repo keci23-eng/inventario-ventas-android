@@ -1,129 +1,125 @@
 # Inventario Ventas Android
 
-A comprehensive Android application for managing inventory and sales operations. This project is built with Kotlin and follows modern Android development practices.
+Una aplicación Android integral para administrar operaciones de inventario y ventas. Este proyecto está construido con Kotlin y sigue las prácticas modernas de desarrollo en Android.
 
-## 📋 Table of Contents
+## 📋 Tabla de Contenidos
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Building](#building)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+- [Características](#características)
+- [Requisitos](#requisitos)
+- [Instalación](#instalación)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Compilación](#compilación)
+- [Uso](#uso)
+- [Configuración](#configuración)
+- [Contribución](#contribución)
+- [Licencia](#licencia)
 
-## ✨ Features
+## ✨ Características
 
-- **Inventory Management**: Track and manage product inventory
-- **Sales Operations**: Record and monitor sales transactions
-- **User-Friendly Interface**: Intuitive UI for easy navigation
-- **Real-time Updates**: Keep inventory synchronized across operations
-- **Data Persistence**: Reliable local storage for inventory and sales data
+- **Gestión de Inventario**: Rastrear y administrar el inventario de productos
+- **Operaciones de Ventas**: Registrar y monitorear transacciones de ventas
+- **Interfaz Amigable**: UI intuitiva para una fácil navegación
+- **Actualizaciones en Tiempo Real**: Mantener el inventario sincronizado en todas las operaciones
+- **Persistencia de Datos**: Almacenamiento local confiable para datos de inventario y ventas
 
-## 📋 Requirements
+## 📋 Requisitos
 
-- **Android SDK**: API Level 21 (Android 5.0) or higher
-- **Kotlin**: 1.7.0 or later
-- **Gradle**: 7.0 or later
-- **Java**: JDK 11 or higher
+- **Android SDK**: API Level 21 (Android 5.0) o superior
+- **Kotlin**: 1.7.0 o posterior
+- **Gradle**: 7.0 o posterior
+- **Java**: JDK 11 o superior
 
-## 🚀 Installation
+## 🚀 Instalación
 
-1. **Clone the repository**:
+1. **Clonar el repositorio**:
    ```bash
    git clone https://github.com/keci23-eng/inventario-ventas-android.git
    cd inventario-ventas-android
    ```
 
-2. **Open in Android Studio**:
-   - Launch Android Studio
-   - Select "Open an existing Android Studio project"
-   - Navigate to the cloned directory and open it
+2. **Abrir en Android Studio**:
+   - Abre Android Studio
+   - Selecciona "Abrir un proyecto existente de Android Studio"
+   - Navega al directorio clonado y ábrelo
 
-3. **Sync Gradle**:
-   - Android Studio will automatically prompt you to sync Gradle files
-   - Alternatively, use `./gradlew build` from the terminal
+3. **Sincronizar Gradle**:
+   - Android Studio te pedirá automáticamente que sincronices los archivos de Gradle
+   - Alternativamente, usa `./gradlew build` desde la terminal
 
-## 📁 Project Structure
+## 📁 Estructura del Proyecto
 
 ```
 inventario-ventas-android/
-├── app/                      # Main application module
-├── gradle/                   # Gradle wrapper and configuration
-├── build.gradle.kts          # Project-level build configuration
-├── settings.gradle.kts       # Gradle settings
-├── gradle.properties         # Gradle properties
-├── gradlew                   # Gradle wrapper script (Linux/Mac)
-├── gradlew.bat              # Gradle wrapper script (Windows)
-└── README.md                # This file
+├── app/                      # Módulo principal de la aplicación
+├── gradle/                   # Contenedor de Gradle y configuración
+├── build.gradle.kts          # Configuración de compilación a nivel de proyecto
+├── settings.gradle.kts       # Configuración de Gradle
+├── gradle.properties         # Propiedades de Gradle
+├── gradlew                   # Script de contenedor de Gradle (Linux/Mac)
+├── gradlew.bat              # Script de contenedor de Gradle (Windows)
+└── README.md                # Este archivo
 ```
 
-## 🔨 Building
+## 🔨 Compilación
 
-### Debug Build
+### Compilación de Depuración
 ```bash
 ./gradlew assembleDebug
 ```
 
-### Release Build
+### Compilación de Lanzamiento
 ```bash
 ./gradlew assembleRelease
 ```
 
-### Run Tests
+### Ejecutar Pruebas
 ```bash
 ./gradlew test
 ```
 
-### Build and Install on Device/Emulator
+### Compilar e Instalar en Dispositivo/Emulador
 ```bash
 ./gradlew installDebug
 ```
 
-## 💻 Usage
+## 💻 Uso
 
-1. **Launch the Application**: Open the app on your Android device or emulator
-2. **Manage Inventory**: 
-   - Add, edit, and delete products from your inventory
-   - Track product quantities and details
-3. **Record Sales**: 
-   - Create sales transactions
-   - Update inventory automatically when sales are completed
-4. **View Reports**: Monitor sales and inventory statistics
+1. **Iniciar la Aplicación**: Abre la aplicación en tu dispositivo Android o emulador
+2. **Administrar Inventario**: 
+   - Añade, edita y elimina productos de tu inventario
+   - Rastrea cantidades y detalles de productos
+3. **Registrar Ventas**: 
+   - Crea transacciones de ventas
+   - Actualiza el inventario automáticamente cuando se completen las ventas
+4. **Ver Reportes**: Monitorea estadísticas de ventas e inventario
 
-## ⚙️ Configuration
+## ⚙️ Configuración
 
-Key configuration files:
+Archivos de configuración clave:
 
-- **gradle.properties**: Project-wide Gradle properties and SDK versions
-- **settings.gradle.kts**: Module configuration and dependencies
-- **build.gradle.kts**: Build configuration and dependencies
+- **gradle.properties**: Propiedades de Gradle a nivel de proyecto y versiones del SDK
+- **settings.gradle.kts**: Configuración de módulos y dependencias
+- **build.gradle.kts**: Configuración de compilación y dependencias
 
-## 🤝 Contributing
+## 🤝 Contribución
 
-Contributions are welcome! To contribute:
+¡Las contribuciones son bienvenidas! Para contribuir:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Haz un fork del repositorio
+2. Crea una rama de características (`git checkout -b feature/CaracterísticaIncreíble`)
+3. Confirma tus cambios (`git commit -m 'Añadir CaracterísticaIncreíble'`)
+4. Sube a la rama (`git push origin feature/CaracterísticaIncreíble`)
+5. Abre un Pull Request
 
-## 📄 License
+## 📄 Licencia
 
-This project is open source and available under the [MIT License](LICENSE) (if applicable). Please check the repository for license information.
+Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE) (si es aplicable). Por favor, verifica el repositorio para obtener información de la licencia.
 
-## 👤 Author
+## 👤 Autor
 
 **keci23-eng**
 - GitHub: [@keci23-eng](https://github.com/keci23-eng)
 
-## 📞 Support
-
-For support, please open an issue in the [GitHub Issues](https://github.com/keci23-eng/inventario-ventas-android/issues) section.
-
 ---
 
-**Last Updated**: March 2026
+**Última Actualización**: Marzo 2026
