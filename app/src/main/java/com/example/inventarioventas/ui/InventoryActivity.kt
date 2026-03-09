@@ -88,7 +88,7 @@ class InventoryActivity : AppCompatActivity() {
                 // Llamamos al ViewModel para borrarlo de la base de datos
                 productVM.delete(productoABorrar)
 
-                Toast.makeText(this@InventoryActivity, "${productoABorrar.name} eliminado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@InventoryActivity, "${productoABorrar.name} Producto Registrado en una venta", Toast.LENGTH_SHORT).show()
             }
         }
 
