@@ -1,11 +1,14 @@
 package com.example.inventarioventas.data.repository
 
+import android.net.Uri
 import com.example.inventarioventas.data.local.dao.*
 import com.example.inventarioventas.data.local.entity.*
 import com.example.inventarioventas.data.local.relation.SaleWithItems
 import com.example.inventarioventas.data.local.transaction.SalesLocalTransaction
 import com.example.inventarioventas.data.remote.api.CatalogApiService
 import com.example.inventarioventas.data.remote.dto.ApiProductDto
+import com.example.inventarioventas.data.remote.firebase.model.FirebaseFirestoreService
+import com.example.inventarioventas.data.remote.firebase.model.FirebaseStorageService
 import com.example.inventarioventas.domain.model.CreateSaleRequest
 import com.example.inventarioventas.domain.model.OnlineProduct
 import com.example.inventarioventas.utils.Result
@@ -19,7 +22,10 @@ class InventoryRepositoryImpl(
     private val saleDao: SaleDao,
     private val saleItemDao: SaleItemDao,
     private val catalogApiService: CatalogApiService,
-    private val salesLocalTransaction: SalesLocalTransaction
+    private val salesLocalTransaction: SalesLocalTransaction,
+    // --- SERVICIOS DE FIREBASE DE TU COMPAÑERO ---
+    private val firebaseFirestoreService: FirebaseFirestoreService,
+    private val firebaseStorageService: FirebaseStorageService
 ) : InventoryRepository {
 
     // -------------------------
@@ -27,18 +33,23 @@ class InventoryRepositoryImpl(
     // -------------------------
     override fun getCategories(): Flow<List<Category>> = categoryDao.getAll()
 
-    override suspend fun addCategory(category: Category): Long =
-        categoryDao.insert(category)
+    override suspend fun addCategory(category: Category): Long {
+        val id = categoryDao.insert(category)
+        firebaseFirestoreService.uploadCategory(category.copy(id = id.toInt()))
+        return id
+    }
 
-    override suspend fun updateCategory(category: Category) =
+    override suspend fun updateCategory(category: Category) {
         categoryDao.update(category)
+        firebaseFirestoreService.uploadCategory(category)
+    }
 
-    override suspend fun deleteCategory(category: Category) =
+    override suspend fun deleteCategory(category: Category) {
         categoryDao.delete(category)
+        firebaseFirestoreService.deleteCategory(category.id)
+    }
 
-    // NUEVA FUNCIÓN: Si la base de datos está vacía, inserta estas 10 categorías
     override suspend fun inicializarCategoriasPorDefecto() {
-        // Tomamos solo la primera lectura de la tabla para ver si está vacía
         val categoriasActuales = categoryDao.getAll().first()
 
         if (categoriasActuales.isEmpty()) {
@@ -55,8 +66,10 @@ class InventoryRepositoryImpl(
                 Category(id = 0, name = "Alimentos")
             )
 
-            // Insertamos una por una en la base de datos
-            categoriasIniciales.forEach { categoryDao.insert(it) }
+            categoriasIniciales.forEach { category ->
+                val id = categoryDao.insert(category)
+                firebaseFirestoreService.uploadCategory(category.copy(id = id.toInt()))
+            }
         }
     }
 
@@ -74,96 +87,105 @@ class InventoryRepositoryImpl(
     override suspend fun getProductById(id: Int): Product? =
         productDao.getById(id)
 
-    override suspend fun addProduct(product: Product): Long =
-        productDao.insert(product)
+    override suspend fun addProduct(product: Product): Long {
+        val id = productDao.insert(product)
+        val savedProduct = product.copy(id = id.toInt())
 
-    override suspend fun updateProduct(product: Product) =
+        val imageUrl = if (!savedProduct.imageUri.isNullOrEmpty()) {
+            firebaseStorageService.uploadProductImage(
+                productId = savedProduct.id,
+                imageUri = Uri.parse(savedProduct.imageUri)
+            )
+        } else null
+
+        firebaseFirestoreService.uploadProduct(savedProduct, imageUrl)
+        return id
+    }
+
+    override suspend fun updateProduct(product: Product) {
         productDao.update(product)
+        val imageUrl = if (!product.imageUri.isNullOrEmpty()) {
+            firebaseStorageService.uploadProductImage(
+                productId = product.id,
+                imageUri = Uri.parse(product.imageUri)
+            )
+        } else null
 
-    override suspend fun deleteProduct(product: Product) =
+        firebaseFirestoreService.uploadProduct(product, imageUrl)
+    }
+
+    override suspend fun deleteProduct(product: Product) {
         productDao.delete(product)
+        firebaseFirestoreService.deleteProduct(product.id)
+    }
 
-    override suspend fun updateStock(productId: Int, newStock: Int) =
+    override suspend fun updateStock(productId: Int, newStock: Int) {
         productDao.updateStock(productId, newStock)
+        val product = productDao.getById(productId)
+        if (product != null) {
+            val imageUrl = if (!product.imageUri.isNullOrEmpty()) {
+                firebaseStorageService.uploadProductImage(
+                    productId = product.id,
+                    imageUri = Uri.parse(product.imageUri)
+                )
+            } else null
+            firebaseFirestoreService.uploadProduct(product, imageUrl)
+        }
+    }
 
     // -------------------------
     // CUSTOMERS
     // -------------------------
     override fun getCustomers(): Flow<List<Customer>> = customerDao.getAll()
+    override fun searchCustomers(query: String): Flow<List<Customer>> = customerDao.searchByName(query)
 
-    override fun searchCustomers(query: String): Flow<List<Customer>> =
-        customerDao.searchByName(query)
+    override suspend fun addCustomer(customer: Customer): Long {
+        val id = customerDao.insert(customer)
+        firebaseFirestoreService.uploadCustomer(customer.copy(id = id.toInt()))
+        return id
+    }
 
-    override suspend fun addCustomer(customer: Customer): Long =
-        customerDao.insert(customer)
-
-    override suspend fun updateCustomer(customer: Customer) =
+    override suspend fun updateCustomer(customer: Customer) {
         customerDao.update(customer)
+        firebaseFirestoreService.uploadCustomer(customer)
+    }
 
-    override suspend fun deleteCustomer(customer: Customer) =
+    override suspend fun deleteCustomer(customer: Customer) {
         customerDao.delete(customer)
+        firebaseFirestoreService.deleteCustomer(customer.id)
+    }
 
     // -------------------------
-    // SALES
+    // SALES (TU LÓGICA CONSERVADA)
     // -------------------------
     override fun getSales(): Flow<List<Sale>> = saleDao.getAll()
+    override fun getSalesByCustomer(customerId: Int): Flow<List<Sale>> = saleDao.getByCustomer(customerId)
+    override fun getSaleItems(saleId: Int): Flow<List<SaleItem>> = saleItemDao.getItemsBySaleId(saleId)
+    override fun getSalesHistory(): Flow<List<SaleWithItems>> = saleDao.getSalesWithItems()
 
-    override fun getSalesByCustomer(customerId: Int): Flow<List<Sale>> =
-        saleDao.getByCustomer(customerId)
+    override suspend fun addSale(sale: Sale): Long {
+        val id = saleDao.insert(sale)
+        firebaseFirestoreService.uploadSale(sale.copy(id = id.toInt()))
+        return id
+    }
 
-    override suspend fun addSale(sale: Sale): Long =
-        saleDao.insert(sale)
-
-    override fun getSaleItems(saleId: Int): Flow<List<SaleItem>> =
-        saleItemDao.getItemsBySaleId(saleId)
-
-    override suspend fun addSaleItems(items: List<SaleItem>) =
+    override suspend fun addSaleItems(items: List<SaleItem>) {
         saleItemDao.insertAll(items)
-
-    // -------------------------
-    // ONLINE CATALOG (RETROFIT)
-    // -------------------------
-    override suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>> {
-        return try {
-            val data = catalogApiService.getProducts()
-            Result.Success(data)
-        } catch (e: Exception) {
-            Result.Error("No se pudo cargar el catálogo. Verifica tu conexión.", e)
-        }
-    }
-
-    override suspend fun obtenerCategoriasOnline(): Result<List<String>> {
-        return try {
-            val data = catalogApiService.getCategories()
-            Result.Success(data)
-        } catch (e: Exception) {
-            Result.Error("No se pudieron cargar las categorías. Verifica tu conexión.", e)
-        }
-    }
-
-    override suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>> {
-        return try {
-            val data = catalogApiService.getProductsByCategory(categoria)
-            Result.Success(data)
-        } catch (e: Exception) {
-            Result.Error("No se pudo cargar la categoría seleccionada. Verifica tu conexión.", e)
-        }
+        items.forEach { firebaseFirestoreService.uploadSaleItem(it) }
     }
 
     // -------------------------
-    // REGISTRAR VENTA (TRANSACCIÓN)
+    // REGISTRAR VENTA (TRANSACCIÓN LOCAL + FIREBASE)
     // -------------------------
     override suspend fun registrarVenta(request: CreateSaleRequest): Result<Long> {
         return try {
+            // --- TU CÓDIGO INTACTO ---
             if (request.items.isEmpty()) {
                 return Result.Error("La venta no puede estar vacía.")
             }
 
-            // 1) calcular total
             val total = request.items.sumOf { it.quantity * it.unitPrice }
-
-            // 2) validar stock y preparar updates
-            val stockUpdates = mutableListOf<Pair<Int, Int>>() // productId -> newStock
+            val stockUpdates = mutableListOf<Pair<Int, Int>>()
 
             request.items.forEach { item ->
                 val product = productDao.getById(item.productId)
@@ -175,29 +197,56 @@ class InventoryRepositoryImpl(
                 stockUpdates.add(product.id to (product.stock - item.quantity))
             }
 
-            // 3) crear Sale (date es Long)
             val sale = Sale(
                 customerId = request.customerId,
                 date = System.currentTimeMillis(),
                 total = total
             )
 
-            // 4) crear items con saleId placeholder (se reemplaza en transacción)
             val items = request.items.map { i ->
                 SaleItem(
-                    saleId = -1, // placeholder
+                    saleId = -1,
                     productId = i.productId,
                     quantity = i.quantity,
                     unitPrice = i.unitPrice
                 )
             }
 
-            // 5) transacción (inserta venta, items y actualiza stock)
+            // Transacción local principal
             val saleId = salesLocalTransaction.createSaleWithItemsAndUpdateStock(
                 sale = sale,
                 items = items,
                 stockUpdates = stockUpdates
             )
+
+            // --- CÓDIGO DE FIREBASE AÑADIDO (No interrumpe tu lógica si falla) ---
+            try {
+                val savedSale = Sale(
+                    id = saleId.toInt(),
+                    customerId = request.customerId,
+                    date = sale.date,
+                    total = total
+                )
+                firebaseFirestoreService.uploadSale(savedSale)
+
+                items.map { it.copy(saleId = saleId.toInt()) }
+                    .forEach { firebaseFirestoreService.uploadSaleItem(it) }
+
+                stockUpdates.forEach { (productId, _) ->
+                    val updatedProduct = productDao.getById(productId)
+                    if (updatedProduct != null) {
+                        val imageUrl = if (!updatedProduct.imageUri.isNullOrEmpty()) {
+                            firebaseStorageService.uploadProductImage(
+                                productId = updatedProduct.id,
+                                imageUri = Uri.parse(updatedProduct.imageUri)
+                            )
+                        } else null
+                        firebaseFirestoreService.uploadProduct(updatedProduct, imageUrl)
+                    }
+                }
+            } catch (e: Exception) {
+                // Si Firebase falla (ej. sin internet), la venta local ya está segura
+            }
 
             Result.Success(saleId)
         } catch (e: Exception) {
@@ -206,35 +255,26 @@ class InventoryRepositoryImpl(
     }
 
     // -------------------------
-    // IMPORTAR PRODUCTO ONLINE A LOCAL
+    // ONLINE CATALOG & IMPORT
     // -------------------------
-    override suspend fun importarProductoDesdeOnline(p: OnlineProduct): Long {
-        // 1. Obtenemos la lista actual de categorías de la base de datos
-        val categoriasActuales = categoryDao.getAll().first()
+    override suspend fun obtenerProductosOnline(): Result<List<ApiProductDto>> = try { Result.Success(catalogApiService.getProducts()) } catch (e: Exception) { Result.Error("Error", e) }
+    override suspend fun obtenerCategoriasOnline(): Result<List<String>> = try { Result.Success(catalogApiService.getCategories()) } catch (e: Exception) { Result.Error("Error", e) }
+    override suspend fun obtenerProductosOnlinePorCategoria(categoria: String): Result<List<ApiProductDto>> = try { Result.Success(catalogApiService.getProductsByCategory(categoria)) } catch (e: Exception) { Result.Error("Error", e) }
 
-        // 2. Buscamos si la categoría del producto ya existe
+    override suspend fun importarProductoDesdeOnline(p: OnlineProduct): Long {
+        val categoriasActuales = categoryDao.getAll().first()
         val categoriaExistente = categoriasActuales.find { it.name == p.category }
 
-        // 3. Si existe, usamos su ID. Si no existe, la insertamos y guardamos el nuevo ID.
-        val categoryId = if (categoriaExistente != null) {
-            categoriaExistente.id
-        } else {
-            categoryDao.insert(Category(id = 0, name = p.category)).toInt()
+        val categoryId = categoriaExistente?.id ?: categoryDao.insert(Category(id = 0, name = p.category)).toInt()
+
+        if (categoriaExistente == null) {
+            firebaseFirestoreService.uploadCategory(Category(id = categoryId, name = p.category))
         }
 
-        // 4. Finalmente, guardamos el producto usando el categoryId correcto
-        return productDao.insert(
-            Product(
-                name = p.title,
-                price = p.price,
-                stock = 1,
-                categoryId = categoryId
-                // Nota: Si 'OnlineProduct' tiene imagen, puedes agregar 'imageUri = p.image' aquí
-            )
-        )
-    }
+        val product = Product(name = p.title, price = p.price, stock = 1, categoryId = categoryId, imageUri = null)
+        val id = productDao.insert(product)
+        firebaseFirestoreService.uploadProduct(product.copy(id = id.toInt()), null)
 
-    override fun getSalesHistory(): Flow<List<SaleWithItems>> {
-        return saleDao.getSalesWithItems()
+        return id
     }
 }

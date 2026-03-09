@@ -25,4 +25,9 @@ interface CategoryDao {
 
     @Delete
     suspend fun delete(category: Category)
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun countCategories(): Int
+
+    @Query("SELECT * FROM categories WHERE name = :name LIMIT 1")
+    suspend fun getByName(name: String): Category?
 }

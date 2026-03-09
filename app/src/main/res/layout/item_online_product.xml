@@ -30,6 +30,18 @@
             tools:text="Fjallraven - Foldsack No. 1 Backpack" />
 
         <TextView
+            android:id="@+id/tvOnlineProductCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOnlineProductName"
+            tools:text="Categoría: Ropa de Hombre" />
+
+        <TextView
             android:id="@+id/tvOnlineProductPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,7 +50,7 @@
             android:textColor="#4CAF50"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvOnlineProductName"
+            app:layout_constraintTop_toBottomOf="@+id/tvOnlineProductCategory"
             tools:text="$109.95" />
 
         <Button
