@@ -22,8 +22,13 @@ interface SaleDao {
 
     @Insert
     suspend fun insert(sale: Sale): Long
-    @Transaction
 
+    // Agrupamos las anotaciones aquí juntas
+    @Transaction
     @Query("SELECT * FROM sales ORDER BY date DESC")
     fun getSalesWithItems(): Flow<List<SaleWithItems>>
+
+    // Opcional: Si en algún momento necesitas cancelar/eliminar una venta
+    // @Delete
+    // suspend fun delete(sale: Sale)
 }

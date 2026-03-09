@@ -1,0 +1,15 @@
+[33mefb7060[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/ui-viewmodels-connection[m[33m)[m Merge pull request #6 from keci23-eng/feature/viewmodels
+[33m8079e5a[m[33m ([m[1;31morigin/feature/viewmodels[m[33m)[m Se agregn ViewModels y Factory
+[33m37c9aac[m Merge pull request #5 from keci23-eng/feature/ui-layout
+[33mccdb5ab[m[33m ([m[1;31morigin/feature/ui-layout[m[33m)[m Se resuelven conflictos de merge
+[33m638cb1e[m Merge pull request #4 from keci23-eng/feature/sales-transaction
+[33m0ad68b1[m[33m ([m[1;31morigin/feature/sales-transaction[m[33m)[m Se implementa registro de ventas con transacción y control de stock
+[33m7c3aab0[m Merge pull request #3 from keci23-eng/feature/network-retrofit
+[33m642dce6[m[33m ([m[1;31morigin/feature/network-retrofit[m[33m)[m Se agrega Retrofit y se maneja error de conexión
+[33m9df4543[m "Implementación de la interfaz gráfica funcional: Layouts de Inventario, Ventas y formularios de edición con ViewBinding configurado."
+[33m13dacbd[m Merge pull request #2 from keci23-eng/feature/repository-layer
+[33m17a4508[m[33m ([m[1;31morigin/feature/repository-layer[m[33m)[m Se implementa la logica para acceder a los datos
+[33mbf3e704[m Merge pull request #1 from keci23-eng/feature/database-room
+[33m3fa25bb[m[33m ([m[1;31morigin/feature/database-room[m[33m)[m Capa de base de datos completa con entidades y DAOS
+[33m425bf08[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Creacion de proyecto
+[33m935570c[m Initial commit

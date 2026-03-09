@@ -15,7 +15,7 @@
         android:theme="@style/Theme.InventarioVentas">
         <activity android:name=".ui.OnlineCatalogActivity" android:exported="false" />
         <activity
-            android:name=".ui.AddEditSale"
+            android:name=".ui.AddEditSaleActivity"
             android:exported="false" />
         <activity
             android:name=".ui.AddEditProduct"
