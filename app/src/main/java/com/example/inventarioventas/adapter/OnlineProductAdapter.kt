@@ -28,7 +28,6 @@ class OnlineProductAdapter(
         // NOTA: Si '.title' sale en rojo, cámbialo por '.name' (depende de cómo tu compañero nombró la variable en OnlineProduct)
         holder.binding.tvOnlineProductName.text = product.title
 
-        // ¡AQUÍ ESTÁ LA LÍNEA NUEVA!
         holder.binding.tvOnlineProductCategory.text = "Categoría: ${product.category}"
 
         holder.binding.tvOnlineProductPrice.text = "$${product.price}"
